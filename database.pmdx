@@ -1,0 +1,22 @@
+<database>
+    <project>
+        <name>Promasu Manager</name>
+        <code>P:\code\qtpy\project-management-tool</code>
+        <build>P:\</build>
+        <git></git>
+        <documentation></documentation>
+        <design></design>
+        <image></image>
+        <logo></logo>
+    </project>
+    <project>
+        <name>IServ-Wrapper</name>
+        <code>P:\code\multi\iserv-wrapper</code>
+        <build></build>
+        <git></git>
+        <documentation></documentation>
+        <design></design>
+        <image></image>
+        <logo></logo>
+    </project>
+</database>
