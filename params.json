@@ -1,0 +1,6 @@
+{
+  "name": "Promasu Manager",
+  "tagline": "A projectmanager written in Python3 and PyQt5",
+  "body": "# Promasu Manager  \r\nA simple to use projectmanager written in Python3 and PyQt5  \r\n## Why using Promasu Manager?  \r\nPromasu Manager is a fast and lightweight projectmanager which you can use for free. It has features that other software does not have.  \r\n## Why I use Python3  \r\nPython3 is the easiest and most powerfull language for programmers to use. It has many functions already integrated. So you could write better code faster without having the problem of buggy code.  \r\n## Why I use PyQt5  \r\nQt5 is in my opinion the most powerfull API for making dynamic UIs. Because I can't programm C++, I used the port of Qt in Python.",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
