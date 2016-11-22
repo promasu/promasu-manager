@@ -56,7 +56,7 @@ class tool(QMainWindow):
         root = tree.getroot()
         listView.clear()
         for child in root:
-            listView.addItem(child[1].text)
+            listView.addItem(child[0].text)
 
     def onChanged(self, text):
         self.lbl.setText(text)
