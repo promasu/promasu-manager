@@ -20,7 +20,7 @@ class tool(QMainWindow):
 
         openAction = QAction('&Öffnen', self)
         openAction.setShortcut('Ctrl+O')
-        openAction.triggered.connect(lambda: self.importHandler(frameLeft))
+        filename = openAction.triggered.connect(lambda: self.importHandler(frameLeft))
 
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&Datei')
@@ -33,6 +33,7 @@ class tool(QMainWindow):
         screenbox.setLayout(hbox)
 
         frameLeft = QListWidget()
+        frameLeft.setMaximumWidth(frameLeft.sizeHintForColumn(0))
 
         frameRight = QFrame(self)
         frameRight.setFrameShape(QFrame.StyledPanel)
@@ -57,6 +58,9 @@ class tool(QMainWindow):
         listView.clear()
         for child in root:
             listView.addItem(child[0].text)
+        listView.setMaximumWidth(listView.sizeHintForColumn(0))
+        self.setWindowTitle("Promasu Manager - " + filename[0])
+        return filename[0]
 
     def onChanged(self, text):
         self.lbl.setText(text)
