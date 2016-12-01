@@ -1,22 +1,38 @@
 <database>
     <project>
         <name>Promasu Manager</name>
-        <code>P:\code\qtpy\project-management-tool</code>
-        <build>P:\</build>
-        <git></git>
-        <documentation></documentation>
-        <design></design>
-        <image></image>
-        <logo></logo>
+        <code>P:\code\qtpy\promasu-manager</code>
+        <build>P:\Compiled\QtPy\promasu-manager</build>
+        <git>https://github.com/promasu/promasu-manager</git>
+        <documentation>https://github.io/promasu/promasu-manager</documentation>
+        <design>NONE</design>
+        <image>NONE</image>
+        <logo>NONE</logo>
+        <language>Python</language>
+        <version>0.0.2</version>
     </project>
     <project>
         <name>IServ-Wrapper</name>
         <code>P:\code\multi\iserv-wrapper</code>
-        <build></build>
-        <git></git>
-        <documentation></documentation>
-        <design></design>
-        <image></image>
-        <logo></logo>
+        <build>https://wrapper.hoelty.network/</build>
+        <git>https://gitlab.hoelty.network/admin-phpython/iserv-wrapper</git>
+        <documentation>https://gitlab.hoelty.network/admin-phpython/iserv-wrapper/wikis/home</documentation>
+        <design>NONE</design>
+        <image>NONE</image>
+        <logo>NONE</logo>
+        <language>Multi</language>
+        <version>1.0.1</version>
+    </project>
+    <project>
+        <name>shc3-App</name>
+        <code>P:\code\java\android\shc3</code>
+        <build>P:\Compiled\APK\shc3\app-0.0.3.apk</build>
+        <git>NONE</git>
+        <documentation>NONE</documentation>
+        <design>P:\Resources\designs\shc3\</design>
+        <image>P:\Resources\images\android\shc3\</image>
+        <logo>P:\Resources\images\android\shc3\mipmap-xxxhdpi\ic_launcher.png</logo>
+        <language>Android</language>
+        <version>0.0.3</version>
     </project>
 </database>
