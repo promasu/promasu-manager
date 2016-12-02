@@ -6,7 +6,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import xml.etree.ElementTree as eT
 
-class tool(QMainWindow):
+class Tool(QMainWindow):
     def __init__(self):
         super().__init__()
 
@@ -46,8 +46,8 @@ class tool(QMainWindow):
         frameLeft = QListWidget()
         frameLeft.setMaximumWidth(frameLeft.sizeHintForColumn(0))
         frameLeft.currentItemChanged.connect(lambda: self.displayInfo(frameLeft, frameRight))
-        frameLeft.connect(frameLeft, QSignalMapper("itemDoubleClicked(QListWidgetItem*)"))
-        frameLeft.connect(frameLeft, QSignalMapper("itemDoubleClicked(QListWidgetItem*)", lambda: self.testBox()))
+        #frameLeft.connect(frameLeft, QSignalMapper("itemDoubleClicked(QListWidgetItem*)"))
+        #frameLeft.connect(frameLeft, QSignalMapper("itemDoubleClicked(QListWidgetItem*)", lambda: self.testBox()))
 
 
         frameRight = QLabel()
@@ -90,16 +90,19 @@ class tool(QMainWindow):
             msgBox = QMessageBox()
             msgBox.setText("Die Datei wurde nicht gefunden.")
             msgBox.setWindowTitle("Promasu Manager Warnung")
+            msgBox.exec()
             return False
         except IndexError:
             msgBox = QMessageBox()
             msgBox.setText("Die Datei ist nicht im richtigen Format.")
             msgBox.setWindowTitle("Promasu Manager Warnung")
+            msgBox.exec()
             return False
         except PermissionError:
             msgBox = QMessageBox()
-            msgBox.setText("Sie besitzen nichtdie Berechtigung um diese Datei zu öffnen.")
+            msgBox.setText("Sie besitzen nicht die Berechtigung um diese Datei zu öffnen.")
             msgBox.setWindowTitle("Promasu Manager Warnung")
+            msgBox.exec()
             return False
         return True
 
@@ -135,5 +138,5 @@ class tool(QMainWindow):
         self.lbl.adjustSize()
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = tool()
+    ex = Tool()
     sys.exit(app.exec_())
