@@ -1,16 +1,32 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
+import os
 import sys
+import xml.etree.ElementTree as eT
+
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-import xml.etree.ElementTree as eT
+
+class myListWidget(QListWidget):
+    def doubleClickedSlot(self,item):
+        #TODO: Add edit screen
+        database = ex.getDatabase()
+        QMessageBox.information(self,
+                                     "Item Double Click Detected!",
+                                      "You clicked: " + database[item.text()][1])
+        return True
 
 class Tool(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        self.database = ""
+        self.filename = ""
         self.initUI()
+
+        if len(sys.argv) >= 2:
+            self.importHandlerInit(self.frameLeft, self.frameRight)
 
     def initUI(self):
         exitAction = QAction('&Schließen', self)
@@ -19,48 +35,56 @@ class Tool(QMainWindow):
 
         openAction = QAction('&Öffnen', self)
         openAction.setShortcut('Ctrl+O')
-        openAction.triggered.connect(lambda: self.importHandler(frameLeft, frameRight))
+        openAction.triggered.connect(lambda: self.importHandler(self.frameLeft, self.frameRight))
 
         addAction = QAction('&Eintrag anlegen', self)
         addAction.setShortcut('Ctrl+N')
-        addAction.triggered.connect(lambda: self.addHandler(frameLeft))
+        addAction.triggered.connect(lambda: self.addHandler(self.frameLeft))
 
-        editmodeAction = QAction('&Bearbeitungsmodus', self)
-        editmodeAction.setShortcut('Ctrl+E')
-        editmodeAction.triggered.connect(lambda: self.editmodeHandler(frameRight))
+        saveAction = QAction('&Speichern', self)
+        saveAction.setShortcut('Ctrl+S')
+        saveAction.triggered.connect(lambda: self.saveProjectfile())
+
+        saveasAction = QAction('&Speichern unter', self)
+        saveasAction.setShortcut('Ctrl+Shift+S')
+        saveasAction.triggered.connect(lambda: self.saveAsProjectfile())
+
+        #editmodeAction = QAction('&Bearbeitungsmodus', self)
+        #editmodeAction.setShortcut('Ctrl+E')
+        #editmodeAction.triggered.connect(lambda: self.editmodeHandler(self.frameRight))
 
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&Datei')
         fileMenu.addAction(openAction)
-        fileMenu.addAction(addAction)
+        fileMenu.addAction(saveAction)
+        fileMenu.addAction(saveasAction)
         fileMenu.addAction(exitAction)
 
         editMenu = menubar.addMenu('&Bearbeiten')
-        editMenu.addAction(editmodeAction)
+        editMenu.addAction(addAction)
+        #editMenu.addAction(editmodeAction)
 
         screenbox = QWidget()
 
         hbox = QHBoxLayout(self)
         screenbox.setLayout(hbox)
 
-        frameLeft = QListWidget()
-        frameLeft.setMaximumWidth(frameLeft.sizeHintForColumn(0))
-        frameLeft.currentItemChanged.connect(lambda: self.displayInfo(frameLeft, frameRight))
-        #frameLeft.connect(frameLeft, QSignalMapper("itemDoubleClicked(QListWidgetItem*)"))
-        #frameLeft.connect(frameLeft, QSignalMapper("itemDoubleClicked(QListWidgetItem*)", lambda: self.testBox()))
+        self.frameLeft = myListWidget()
+        self.frameLeft.setMaximumWidth(self.frameLeft.sizeHintForColumn(0))
+        self.frameLeft.currentItemChanged.connect(lambda: self.displayInfo(self.frameLeft, self.frameRight))
+        self.frameLeft.itemDoubleClicked[QListWidgetItem].connect(self.frameLeft.doubleClickedSlot)
 
-
-        frameRight = QLabel()
-        frameRight.setTextFormat(Qt.RichText)
-        frameRight.setTextInteractionFlags(Qt.TextBrowserInteraction)
-        frameRight.setOpenExternalLinks(True)
+        self.frameRight = QLabel()
+        self.frameRight.setTextFormat(Qt.RichText)
+        self.frameRight.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        self.frameRight.setOpenExternalLinks(True)
 
         screenSplitter = QSplitter(Qt.Horizontal)
-        screenSplitter.addWidget(frameLeft)
-        screenSplitter.addWidget(frameRight)
+        screenSplitter.addWidget(self.frameLeft)
+        screenSplitter.addWidget(self.frameRight)
 
         hbox.addWidget(screenSplitter)
-
+            
         self.setCentralWidget(screenbox)
         self.showMaximized()
         self.setWindowTitle('Promasu Manager')
@@ -78,8 +102,48 @@ class Tool(QMainWindow):
                 listView.addItem(child[0].text)
             listView.setMaximumWidth(listView.sizeHintForColumn(0) + 10)
             listView.setMinimumWidth(listView.sizeHintForColumn(0) + 10)
-            labelView.setText(filename[0])
+            self.database = self.listDictParser(root)
             self.filename = str(filename[0])
+            self.setWindowTitle('Promasu Manager - ' + self.filename)
+        except eT.ParseError:
+            msgBox = QMessageBox()
+            msgBox.setText("Die Datei hat kein gültiges Format.")
+            msgBox.setWindowTitle("Promasu Manager Warnung")
+            msgBox.exec()
+            return False
+        except FileNotFoundError:
+            msgBox = QMessageBox()
+            msgBox.setText("Die Datei wurde nicht gefunden.")
+            msgBox.setWindowTitle("Promasu Manager Warnung")
+            msgBox.exec()
+            return False
+        except IndexError:
+            msgBox = QMessageBox()
+            msgBox.setText("Die Datei ist nicht im richtigen Format.")
+            msgBox.setWindowTitle("Promasu Manager Warnung")
+            msgBox.exec()
+            return False
+        except PermissionError:
+            msgBox = QMessageBox()
+            msgBox.setText("Sie besitzen nicht die Berechtigung um diese Datei zu öffnen.")
+            msgBox.setWindowTitle("Promasu Manager Warnung")
+            msgBox.exec()
+            return False
+        return True
+    
+    def importHandlerInit(self, listView, labelView):
+        filename = sys.argv[1]
+        try:
+            tree = eT.parse(filename)
+            root = tree.getroot()
+            listView.clear()
+            for child in root:
+                listView.addItem(child[0].text)
+            listView.setMaximumWidth(listView.sizeHintForColumn(0) + 10)
+            listView.setMinimumWidth(listView.sizeHintForColumn(0) + 10)
+            self.database = self.listDictParser(root)
+            self.filename = str(filename)
+            self.setWindowTitle('Promasu Manager - ' + os.path.abspath(self.filename))
         except eT.ParseError:
             msgBox = QMessageBox()
             msgBox.setText("Die Datei hat kein gültiges Format.")
@@ -116,8 +180,8 @@ class Tool(QMainWindow):
         docString = "Dokumentation: <a href=\"" + root[itemNumber][4].text + "\">" + root[itemNumber][4].text + "</a><br>"
         designString = "Designs: <a href=\"file:///" + root[itemNumber][5].text + "\">" + root[itemNumber][5].text + "</a><br>"
         imageString = "Bilder: <a href=\"file:///" + root[itemNumber][6].text + "\">" + root[itemNumber][6].text + "</a><br>"
-        langString = "Sprache: " + root[itemNumber][7].text + "<br>"
-        versionString = "Version: " + root[itemNumber][8].text
+        langString = "Sprache: " + root[itemNumber][8].text + "<br>"
+        versionString = "Version: " + root[itemNumber][9].text
         labelView.setText(saveString+buildString+gitString+docString+designString+imageString+langString+versionString)
         return True
 
@@ -127,15 +191,82 @@ class Tool(QMainWindow):
     def editmodeHandler(self, labelView):
         pass
 
-    def testBox(self):
+    def testBox(self, msg):
         msgBox = QMessageBox()
-        msgBox.setText("Es klappt.")
+        msgBox.setText(msg)
         msgBox.setWindowTitle("Promasu Manager")
         return True
+
+    def editDialog(self):
+
+        return True
+
+    def listDictParser(self, xmlList):
+        dict = {}
+        for child in xmlList:
+            dict[child[0].text] = child[0:len(child)]
+        for entry in dict:
+            for i in range(10):
+                dict[entry][i] = dict[entry][i].text
+        return dict
 
     def onChanged(self, text):
         self.lbl.setText(text)
         self.lbl.adjustSize()
+
+    def getDatabase(self):
+        database = self.database
+        return database
+
+    def saveProjectfile(self):
+        try:
+            fileContent = self.xmlWriter()
+            f = open(self.filename, 'w+')
+            f.write(fileContent)
+            f.close()
+            return True
+        except FileNotFoundError:
+            return False
+        except:
+            self.saveAsProjectfile()
+            return True
+
+    def saveAsProjectfile(self):
+        try:
+            fileDialog = QFileDialog()
+            fileDialog.setFileMode(QFileDialog.ExistingFile)
+            filename = fileDialog.getSaveFileName(self, 'Promasu Datenbank speichern', '.', 'Promasu Projectdatabase (*.pmdx)')
+            fileContent = self.xmlWriter()
+            f = open(filename[0], 'w+')
+            f.write(fileContent)
+            f.close()
+            return True
+        except FileNotFoundError:
+            return False
+        except:
+            self.saveAsProjectfile()
+            return True
+
+    def xmlWriter(self):
+        dict = self.database
+        fileContent = ""
+        fileContent += "<database>\n"
+        for entry in dict:
+            fileContent += "    <project>\n"
+            fileContent += "        <name>"+dict[entry][0]+"</name>\n"
+            fileContent += "        <code>"+dict[entry][1]+"</code>\n"
+            fileContent += "        <build>"+dict[entry][2]+"</build>\n"
+            fileContent += "        <git>"+dict[entry][3]+"</git>\n"
+            fileContent += "        <documentation>"+dict[entry][4]+"</documentation>\n"
+            fileContent += "        <design>"+dict[entry][5]+"</design>\n"
+            fileContent += "        <image>"+dict[entry][6]+"</image>\n"
+            fileContent += "        <logo>"+dict[entry][7]+"</logo>\n"
+            fileContent += "        <language>"+dict[entry][8]+"</language>\n"
+            fileContent += "        <version>"+dict[entry][9]+"</version>\n"
+            fileContent += "    </project>\n"
+        fileContent += "</database>"
+        return fileContent
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = Tool()
