@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import os
 import sys
@@ -174,14 +174,16 @@ class Tool(QMainWindow):
         tree = eT.parse(self.filename)
         root = tree.getroot()
         itemNumber = listView.currentRow()
-        saveString = "Speicherort: <a href=\"file:///" + root[itemNumber][1].text + "\">" + root[itemNumber][1].text + "</a><br>"
-        buildString = "Build: <a href=\"file:///" + root[itemNumber][2].text + "\">" + root[itemNumber][2].text + "</a><br>"
-        gitString = "Git: <a href=\"" + root[itemNumber][3].text + "\">" + root[itemNumber][3].text + "</a><br>"
-        docString = "Dokumentation: <a href=\"" + root[itemNumber][4].text + "\">" + root[itemNumber][4].text + "</a><br>"
-        designString = "Designs: <a href=\"file:///" + root[itemNumber][5].text + "\">" + root[itemNumber][5].text + "</a><br>"
-        imageString = "Bilder: <a href=\"file:///" + root[itemNumber][6].text + "\">" + root[itemNumber][6].text + "</a><br>"
-        langString = "Sprache: " + root[itemNumber][8].text + "<br>"
-        versionString = "Version: " + root[itemNumber][9].text
+
+        saveString = "Speicherort: <a href=\"file:///" + root[itemNumber][1].text + "\">" + root[itemNumber][1].text + "</a><br>" if root[itemNumber][1].text != "NONE" else ""
+        buildString = "Build: <a href=\"file:///" + root[itemNumber][2].text + "\">" + root[itemNumber][2].text + "</a><br>" if root[itemNumber][2].text != "NONE" else ""
+        gitString = "Git: <a href=\"" + root[itemNumber][3].text + "\">" + root[itemNumber][3].text + "</a><br>" if root[itemNumber][3].text != "NONE" else ""
+        docString = "Dokumentation: <a href=\"" + root[itemNumber][4].text + "\">" + root[itemNumber][4].text + "</a><br>" if root[itemNumber][4].text != "NONE" else ""
+        designString = "Designs: <a href=\"file:///" + root[itemNumber][5].text + "\">" + root[itemNumber][5].text + "</a><br>" if root[itemNumber][5].text != "NONE" else ""
+        imageString = "Bilder: <a href=\"file:///" + root[itemNumber][6].text + "\">" + root[itemNumber][6].text + "</a><br>" if root[itemNumber][6].text != "NONE" else ""
+        langString = "Sprache: " + root[itemNumber][8].text + "<br>" if root[itemNumber][8].text != "NONE" else ""
+        versionString = "Version: " + root[itemNumber][9].text if root[itemNumber][9].text != "NONE" else ""
+
         labelView.setText(saveString+buildString+gitString+docString+designString+imageString+langString+versionString)
         return True
 
@@ -197,8 +199,7 @@ class Tool(QMainWindow):
         msgBox.setWindowTitle("Promasu Manager")
         return True
 
-    def editDialog(self):
-
+    def editDialog(self, dictKey):
         return True
 
     def listDictParser(self, xmlList):
@@ -240,6 +241,8 @@ class Tool(QMainWindow):
             f = open(filename[0], 'w+')
             f.write(fileContent)
             f.close()
+            self.filename = filename[0]
+            self.setWindowTitle(self.filename)
             return True
         except FileNotFoundError:
             return False
