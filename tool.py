@@ -326,18 +326,24 @@ class Tool(QMainWindow):
     def saveAsProjectfile(self):
         try:
             fileDialog = QFileDialog()
-            fileDialog.setFileMode(QFileDialog.ExistingFile)
-            filename = fileDialog.getSaveFileName(self, 'Promasu Datenbank speichern', '.', 'Promasu Projectdatabase (*.pmdx)')
+            fileDialog.setFileMode(QFileDialog.AnyFile)
+            fileDialog.setDefaultSuffix(".pmdx")
+            dialogFilename = fileDialog.getSaveFileName(self, 'Promasu Datenbank speichern', '.', 'Promasu Projectdatabase (*.pmdx)')
             fileContent = self.xmlWriter()
-            f = open(filename[0], 'w+')
+            if dialogFilename[0][-5:] != ".pmdx":
+                filename = dialogFilename[0] + ".pmdx"
+            else:
+                filename = dialogFilename[0]
+            f = open(filename, 'w+')
             f.write(fileContent)
             f.close()
-            self.filename = filename[0]
-            self.setWindowTitle(self.filename)
+            self.filename = filename
+            self.setWindowTitle("Promasu Manager - " + self.filename)
             return True
         except FileNotFoundError:
             return False
-        except:
+        except Exception as e:
+            print(e)
             self.saveAsProjectfile()
             return True
 
