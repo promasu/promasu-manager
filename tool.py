@@ -20,12 +20,12 @@ class Tool(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.database = ""
+        self.database = {}
         self.filename = ""
         self.initUI()
 
         if len(sys.argv) >= 2:
-            self.importHandlerInit(self.frameLeft)
+            self.importHandlerInit(self.frameLeft, sys.argv[1])
 
     def initUI(self):
         exitAction = QAction('&Schließen', self)
@@ -104,8 +104,9 @@ class Tool(QMainWindow):
             self.importHandler(listView)
             return False
         except FileNotFoundError:
+            if not filename[0] == "":
+                self.importHandler(listView)
             self.warnBox("Die Datei wurde nicht gefunden.")
-            self.importHandler(listView)
             return False
         except IndexError:
             self.warnBox("Die Datei ist nicht im richtigen Format.")
@@ -117,8 +118,7 @@ class Tool(QMainWindow):
             return False
         return True
 
-    def importHandlerInit(self, listView):
-        filename = sys.argv[1]
+    def importHandlerInit(self, listView, filename):
         try:
             tree = eT.parse(filename)
             root = tree.getroot()
@@ -283,8 +283,12 @@ class Tool(QMainWindow):
                 for i in range(len(entryList)):
                     appendString = entryList[i] if entryList[i] != "" else "NONE"
                     self.database[entryList[0]].append(appendString)
-        self.saveProjectfile()
-        self.refreshViews()
+        if not self.filename == "":
+            self.saveProjectfile()
+            self.refreshViews()
+        else:
+            self.saveAsProjectfile()
+            self.importHandlerInit(self.frameLeft,self.filename)
         window.close()
 
     def refreshViews(self):
