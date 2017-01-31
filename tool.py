@@ -11,7 +11,6 @@ from PyQt5.QtCore import *
 
 class myListWidget(QListWidget):
     def doubleClickedSlot(self,item):
-        #TODO: Add edit screen
         database = ex.getDatabase()
         Tool.editDialog(ex, database[item.text()][0])
         return True
@@ -82,6 +81,7 @@ class Tool(QMainWindow):
         self.setCentralWidget(screenbox)
         self.showMaximized()
         self.setWindowTitle('Promasu Manager')
+        self.setWindowIcon(QIcon('Promasu_manager.ico'))
         self.show()
 
     def importHandler(self, listView):
@@ -148,14 +148,14 @@ class Tool(QMainWindow):
         tree = eT.parse(self.filename)
         root = tree.getroot()
         itemNumber = listView.currentRow()
-        saveString = "Speicherort: <a href=\"file:///" + root[itemNumber][1].text + "\">" + root[itemNumber][1].text + "</a><br>" if root[itemNumber][1].text != "NONE" or None else ""
-        buildString = "Build: <a href=\"file:///" + root[itemNumber][2].text + "\">" + root[itemNumber][2].text + "</a><br>" if root[itemNumber][2].text != "NONE" or None else ""
-        gitString = "Git: <a href=\"" + root[itemNumber][3].text + "\">" + root[itemNumber][3].text + "</a><br>" if root[itemNumber][3].text != "NONE" or None else ""
-        docString = "Dokumentation: <a href=\"" + root[itemNumber][4].text + "\">" + root[itemNumber][4].text + "</a><br>" if root[itemNumber][4].text != "NONE" or None else ""
-        designString = "Designs: <a href=\"file:///" + root[itemNumber][5].text + "\">" + root[itemNumber][5].text + "</a><br>" if root[itemNumber][5].text != "NONE" or None else ""
-        imageString = "Bilder: <a href=\"file:///" + root[itemNumber][6].text + "\">" + root[itemNumber][6].text + "</a><br>" if root[itemNumber][6].text != "NONE" or None else ""
-        langString = "Sprache: " + root[itemNumber][8].text + "<br>" if root[itemNumber][8].text != "NONE" or None else ""
-        versionString = "Version: " + root[itemNumber][9].text if root[itemNumber][9].text != "NONE" else ""
+        saveString = "Speicherort: <a href=\"file:///" + root[itemNumber][1].text + "\">" + root[itemNumber][1].text + "</a><br>" if root[itemNumber][1].text != "NONE" and root[itemNumber][1].text is not None else ""
+        buildString = "Build: <a href=\"file:///" + root[itemNumber][2].text + "\">" + root[itemNumber][2].text + "</a><br>" if root[itemNumber][2].text != "NONE" and root[itemNumber][2].text is not None else ""
+        gitString = "Git: <a href=\"" + root[itemNumber][3].text + "\">" + root[itemNumber][3].text + "</a><br>" if root[itemNumber][3].text != "NONE" and root[itemNumber][3].text is not None else ""
+        docString = "Dokumentation: <a href=\"" + root[itemNumber][4].text + "\">" + root[itemNumber][4].text + "</a><br>" if root[itemNumber][4].text != "NONE" and root[itemNumber][4].text is not None else ""
+        designString = "Designs: <a href=\"file:///" + root[itemNumber][5].text + "\">" + root[itemNumber][5].text + "</a><br>" if root[itemNumber][5].text != "NONE" and root[itemNumber][5].text is not None else ""
+        imageString = "Bilder: <a href=\"file:///" + root[itemNumber][6].text + "\">" + root[itemNumber][6].text + "</a><br>" if root[itemNumber][6].text != "NONE" and root[itemNumber][6].text is not None else ""
+        langString = "Sprache: " + root[itemNumber][8].text + "<br>" if root[itemNumber][8].text != "NONE" and root[itemNumber][8].text is not None else ""
+        versionString = "Version: " + root[itemNumber][9].text if root[itemNumber][9].text != "NONE" and root[itemNumber][9].text is not None else ""
         labelView.setText(saveString+buildString+gitString+docString+designString+imageString+langString+versionString)
         return True
 
@@ -296,6 +296,8 @@ class Tool(QMainWindow):
         self.frameLeft.clear()
         for key in self.database:
             self.frameLeft.addItem(key)
+        self.frameLeft.setMinimumWidth(self.frameLeft.sizeHintForColumn(0) + 10)
+        return True
 
     def listDictParser(self, xmlList):
         dict = {}
@@ -357,16 +359,16 @@ class Tool(QMainWindow):
         fileContent += "<database>\n"
         for entry in dict:
             fileContent += "    <project>\n"
-            fileContent += "        <name>"+dict[entry][0]+"</name>\n" if dict[entry][0] != "NONE" or None else "        <name>NONE</name>\n"
-            fileContent += "        <code>"+dict[entry][1]+"</code>\n" if dict[entry][1] != "NONE" or None else "        <code>NONE</code>\n"
-            fileContent += "        <build>"+dict[entry][2]+"</build>\n" if dict[entry][2] != "NONE" or None else "        <build>NONE</build>\n"
-            fileContent += "        <git>"+dict[entry][3]+"</git>\n" if dict[entry][3] != "NONE" or None else "        <git>NONE</git>\n"
-            fileContent += "        <documentation>"+dict[entry][4]+"</documentation>\n" if dict[entry][4] != "NONE" or None else "        <documentation>NONE</documentation>\n"
-            fileContent += "        <design>"+dict[entry][5]+"</design>\n" if dict[entry][5] != "NONE" or None else "        <design>NONE</design>\n"
-            fileContent += "        <image>"+dict[entry][6]+"</image>\n" if dict[entry][6] != "NONE" or None else "        <image>NONE</image>\n"
-            fileContent += "        <logo>"+dict[entry][7]+"</logo>\n" if dict[entry][7] != "NONE" or None else "        <logo>NONE</logo>\n"
-            fileContent += "        <language>"+dict[entry][8]+"</language>\n" if dict[entry][8] != "NONE" or None else "        <language>NONE</language>\n"
-            fileContent += "        <version>"+dict[entry][9]+"</version>\n" if dict[entry][9] != "NONE" or None else "        <version>NONE</version>\n"
+            fileContent += "        <name>"+dict[entry][0]+"</name>\n" if dict[entry][0] != "NONE" and dict[entry][0] is not None else "        <name>NONE</name>\n"
+            fileContent += "        <code>"+dict[entry][1]+"</code>\n" if dict[entry][1] != "NONE" and dict[entry][1] is not None else "        <code>NONE</code>\n"
+            fileContent += "        <build>"+dict[entry][2]+"</build>\n" if dict[entry][2] != "NONE" and dict[entry][2] is not None else "        <build>NONE</build>\n"
+            fileContent += "        <git>"+dict[entry][3]+"</git>\n" if dict[entry][3] != "NONE" and dict[entry][3] is not None else "        <git>NONE</git>\n"
+            fileContent += "        <documentation>"+dict[entry][4]+"</documentation>\n" if dict[entry][4] != "NONE" and dict[entry][4] is not None else "        <documentation>NONE</documentation>\n"
+            fileContent += "        <design>"+dict[entry][5]+"</design>\n" if dict[entry][5] != "NONE" and dict[entry][5] is not None else "        <design>NONE</design>\n"
+            fileContent += "        <image>"+dict[entry][6]+"</image>\n" if dict[entry][6] != "NONE" and dict[entry][6] is not None else "        <image>NONE</image>\n"
+            fileContent += "        <logo>"+dict[entry][7]+"</logo>\n" if dict[entry][7] != "NONE" and dict[entry][7] is not None else "        <logo>NONE</logo>\n"
+            fileContent += "        <language>"+dict[entry][8]+"</language>\n" if dict[entry][8] != "NONE" and dict[entry][8] is not None else "        <language>NONE</language>\n"
+            fileContent += "        <version>"+dict[entry][9]+"</version>\n" if dict[entry][9] != "NONE" and dict[entry][9] is not None else "        <version>NONE</version>\n"
             fileContent += "    </project>\n"
         fileContent += "</database>"
         return fileContent
