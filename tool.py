@@ -4,6 +4,7 @@ import os
 import sys
 import xml.etree.ElementTree as eT
 import time
+from collections import OrderedDict
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -19,7 +20,7 @@ class Tool(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.database = {}
+        self.database = OrderedDict
         self.filename = ""
         self.initUI()
 
@@ -226,6 +227,10 @@ class Tool(QMainWindow):
         abord = QPushButton()
         abord.setText("Abbrechen")
         abord.clicked.connect(lambda: window.close())
+
+        delete = QPushButton()
+        delete.setText("Löschen")
+        delete.clicked.connect(lambda: self.database.pop(dictKey) and self.refreshViews() and window.close())
 
         window.setLayout(formLayout)
 
