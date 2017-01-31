@@ -162,13 +162,13 @@ class Tool(QMainWindow):
 
     def warnBox(self, msg):
         msgBox = QMessageBox()
-        msgBox.setText(msg)
+        msgBox.setText(str(msg))
         msgBox.setWindowTitle("Warnung")
         msgBox.exec()
 
     def testBox(self, msg):
         msgBox = QMessageBox()
-        msgBox.setText(msg)
+        msgBox.setText(str(msg))
         msgBox.setWindowTitle("Test")
         return True
 
@@ -211,7 +211,7 @@ class Tool(QMainWindow):
         formLayout.addRow("Sprache: ", language)
         formLayout.addRow("Version: ", version)
 
-        formLayout.addRow(submit, abord)
+        formLayout.addRow(abord, submit)
 
         window.exec()
 
@@ -269,7 +269,7 @@ class Tool(QMainWindow):
         formLayout.addRow("Version: ", version)
 
         formLayout.addRow(delete)
-        formLayout.addRow(submit, abord)
+        formLayout.addRow(abord, submit)
 
         window.exec()
 
@@ -302,6 +302,7 @@ class Tool(QMainWindow):
         self.frameLeft.clear()
         for key in self.database:
             self.frameLeft.addItem(key)
+        self.saveProjectfile()
         self.frameLeft.setMinimumWidth(self.frameLeft.sizeHintForColumn(0) + 10)
         return True
 
@@ -325,14 +326,15 @@ class Tool(QMainWindow):
     def saveProjectfile(self):
         try:
             fileContent = self.xmlWriter()
-            f = open(self.filename, 'w+')
+            f = open(self.filename, 'w+', 1000, 'utf-8')
             f.write(fileContent)
             f.close()
             return True
         except FileNotFoundError:
-            return False
-        except:
             self.saveAsProjectfile()
+            return True
+        except Exception as e:
+            self.warnBox(e)
             return True
 
     def saveAsProjectfile(self):
@@ -346,17 +348,17 @@ class Tool(QMainWindow):
                 filename = dialogFilename[0] + ".pmdx"
             else:
                 filename = dialogFilename[0]
-            f = open(filename, 'w+')
+            f = open(filename, 'w+', 1000, 'utf-8')
             f.write(fileContent)
             f.close()
             self.filename = filename
             self.setWindowTitle("Promasu Manager - " + self.filename)
             return True
         except FileNotFoundError:
+            self.saveAsProjectfile()
             return False
         except Exception as e:
-            print(e)
-            self.saveAsProjectfile()
+            self.warnBox(e)
             return True
 
     def xmlWriter(self):
