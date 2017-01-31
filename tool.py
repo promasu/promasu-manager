@@ -268,6 +268,7 @@ class Tool(QMainWindow):
         formLayout.addRow("Sprache: ", language)
         formLayout.addRow("Version: ", version)
 
+        formLayout.addRow(delete)
         formLayout.addRow(submit, abord)
 
         window.exec()
